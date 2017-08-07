@@ -1,5 +1,6 @@
 ;; Jason Hemann and Dan Friedman
 ;; microKanren, final implementation from paper
+;; extended for promises by Nathaniel Rudavsky-Brody
 
 (define (var c) (vector c))
 (define (var? x) (vector? x))
@@ -42,10 +43,37 @@
   (cond
     ((null? $1) $2)
     ((procedure? $1) (lambda () (mplus $2 ($1))))
+    ((and (promise? $1) (promise? $2)) 
+     (delay (mplus (force $1) (force $2))))
+    ((promise? $1) (mplus $2 $1))
     (else (cons (car $1) (mplus (cdr $1) $2)))))
 
+(define (wrap g)
+  (lambda (s/c)
+    (let rec (($ (g s/c)))
+      (cond ((null? $) '())
+	    ((promise? $) (force $))
+            ((procedure? $) (lambda () (rec ($))))
+	    (else (cons (car $) (rec (cdr $))))))))
+
 (define (bind $ g)
-  (cond
-    ((null? $) mzero)
-    ((procedure? $) (lambda () (bind ($) g)))
-    (else (mplus (g (car $)) (bind (cdr $) g)))))
+   (cond
+     ((null? $) mzero)
+     ((procedure? $) (lambda () (bind ($) g)))
+     ((promise? $) (delay (bind (force $) (wrap g))))
+     (else (mplus (g (car $)) (bind (cdr $) g)))))
+
+(define-syntax later
+  (syntax-rules ()
+    ((_ g) (lambda (s/c) (delay (g s/c)))))) 
+
+(define (promised vals)
+  (take-right vals 0))
+
+(define (future vals)
+  (let ((p (promised vals)))
+    (and (promise? p) (force p))))
+
+(define (current vals)
+  (drop-right vals 0))
+
