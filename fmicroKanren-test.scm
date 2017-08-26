@@ -30,7 +30,7 @@
 (define empty-state '(() . 0))
 
 (test-check "disj with one later, current"
-  (current ((call/fresh (lambda (q) (disj (== q 4) (==later q 5)))) empty-state))
+  (take-now ((call/fresh (lambda (q) (disj (== q 4) (==later q 5)))) empty-state))
   '((((#(0) . 4)) . 1)))
 
 (test-check "disj with one later, promised"
@@ -45,40 +45,40 @@
   (force ((call/fresh (lambda (q) (conj (== q 4) (==later q 5)))) empty-state))
   '())
 
-(define $0 (run* (q) (disj (== q 4) (later (== q 5)))))
+(define $0 (run* (q) (disj (== q 4) (next (== q 5)))))
 
 (test-check "miniKanren disj with one later, current"
-  (current $0)
+  (take-now $0)
   '(4))
 
 (test-check "miniKanren disj with one later, promised"
-   (future $0)
+   (take-next $0)
   '(5))
 
 (test-check "basic functioning of disj"
- (current ((disj (later (== #(0) 6)) (disj (== #(0) 5) (later (== #(0) 7)))) empty-state))
- (current ((disj (== #(0) 5) (later (disj (== #(0) 6) (== #(0) 7)))) empty-state)))
+ (take-now ((disj (next (== #(0) 6)) (disj (== #(0) 5) (next (== #(0) 7)))) empty-state))
+ (take-now ((disj (== #(0) 5) (next (disj (== #(0) 6) (== #(0) 7)))) empty-state)))
 
 (define $1
   (run* (q)
-    (later (== q 4))
-    (disj (later (later (== q 5)))
-          (later (== q 4)))))
+    (next (== q 4))
+    (disj (next (next (== q 5)))
+          (next (== q 4)))))
 
 (test-check "nested promises, current"
   (promise? $1) #t)
 
 (test-check "nested promises, promised"
-  (current (future $1))
+  (take-now (take-next $1))
   '(4))
 
 (test-check "nested promises, twice promised"
-  (future (future $1))
+  (take-next (take-next $1))
   '())
 
 (define (inco x)
   (let r ((n 0))
-    (disj (== x n) (later (r (+ n 1))))))
+    (disj (== x n) (next (r (+ n 1))))))
 
 (define $2
   (run* (q)
@@ -87,19 +87,19 @@
       (conj (inco a) (inco b)))))
 
 (test-check "recursively nested promises, current"
-  (current $2)
+  (take-now $2)
   '((0 0)))
 
 (test-check "recursively nested promises, first promise"
-  (current (future $2))
+  (take-now (take-next $2))
   '((0 1) (1 0) (1 1)))
 
 (test-check "recursively nested promises, second promise"
-  (current (future (future $2)))
+  (take-now (take-next (take-next $2)))
   '((1 2) (2 0) (2 1) (2 2) (0 2)))
 
 (test-check "recursively nested promises, third promise"
-  (current (future (future (future $2))))
+  (take-now (take-next (take-next (take-next $2))))
   '((0 3) (2 3) (3 0) (3 1) (3 2) (3 3) (1 3)))
 
 
@@ -181,3 +181,19 @@
 (test-check "many non-ans"
   (take 1 (many-non-ans empty-state))
 '((((#(0) . 3)) . 1)))
+
+;; of course db *should* be a real mk generator, but for simplicity's sake..
+(define *db* 1)
+(define (db x) (Zzz (== x *db*)))
+(define r1 (run* (q) (== q 'done) (until (db 1) (db 3))))
+(define r2 (run* (q) (== q 'done) (precedes (db 3) (db 4))))
+(set! *db* 3)
+
+(test-check "Simple 'until' that succeeds"
+  (take-next r1) '(done))
+
+(test-check "Simple 'precedes' that succeeds"
+  (take-next r2) '(done))
+
+
+

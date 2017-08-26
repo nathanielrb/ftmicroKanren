@@ -68,6 +68,16 @@
 	    ((promise? $) $)
 	    (else (cons (car $) (take (- n 1) (cdr $))))))))
 
+(define (promised $)
+  (take-right $ 0))
+
+(define (take-next $)
+  (let ((p (promised $)))
+    (and (promise? p) (force p))))
+
+(define (take-now $)
+  (drop-right $ 0))
+
 (define (reify-1st s/c)
   (let ((v (walk* (var 0) (car s/c))))
     (walk* v (reify-s v '()))))

@@ -63,17 +63,28 @@
      ((promise? $) (delay (bind (force $) (wrap g))))
      (else (mplus (g (car $)) (bind (cdr $) g)))))
 
-(define-syntax later
+;; Temporal operators
+
+(define-syntax next
   (syntax-rules ()
     ((_ g) (lambda (s/c) (delay (g s/c)))))) 
 
-(define (promised vals)
-  (take-right vals 0))
+(define (always g)
+  (conj g (next (always g))))
 
-(define (future vals)
-  (let ((p (promised vals)))
-    (and (promise? p) (force p))))
+(define (eventually g)
+  (disj g (next (eventually g))))
 
-(define (current vals)
-  (drop-right vals 0))
+;; correct?
+(define (until g1 g2)
+  (disj g2 (conj g1 (next (until g1 g2)))))
+
+;; not correct...
+;; (define (precedes g1 g2)
+;;   (disj g2 (conj (eventually g1) (next (precedes g1 g2)))))  
+
+;; not correct...
+;; (define (releases g1 g2)
+;;   (disj g1
+;; 	(conj g2 (next (releases g1 g2)))))
 
