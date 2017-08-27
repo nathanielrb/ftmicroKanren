@@ -48,7 +48,7 @@
     ((promise? $1) (mplus $2 $1))
     (else (cons (car $1) (mplus (cdr $1) $2)))))
 
-(define (wrap g)
+(define (advance g)
   (lambda (s/c)
     (let rec (($ (g s/c)))
       (cond ((null? $) '())
@@ -60,31 +60,11 @@
    (cond
      ((null? $) mzero)
      ((procedure? $) (lambda () (bind ($) g)))
-     ((promise? $) (delay (bind (force $) (wrap g))))
+     ((promise? $) (delay (bind (force $) (advance g))))
      (else (mplus (g (car $)) (bind (cdr $) g)))))
-
-;; Temporal operators
 
 (define-syntax next
   (syntax-rules ()
     ((_ g) (lambda (s/c) (delay (g s/c)))))) 
 
-(define (always g)
-  (conj g (next (always g))))
-
-(define (eventually g)
-  (disj g (next (eventually g))))
-
-;; correct?
-(define (until g1 g2)
-  (disj g2 (conj g1 (next (until g1 g2)))))
-
-;; not correct...
-;; (define (precedes g1 g2)
-;;   (disj g2 (conj (eventually g1) (next (precedes g1 g2)))))  
-
-;; not correct...
-;; (define (releases g1 g2)
-;;   (disj g1
-;; 	(conj g2 (next (releases g1 g2)))))
 

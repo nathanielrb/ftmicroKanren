@@ -71,11 +71,7 @@
 (define (promised $)
   (take-right $ 0))
 
-(define (take-next $)
-  (let ((p (promised $)))
-    (and (promise? p) (force p))))
-
-(define (take-now $)
+(define (current $)
   (drop-right $ 0))
 
 (define (reify-1st s/c)
