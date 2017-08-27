@@ -1,6 +1,6 @@
-# ftKanren
+# tmicroKanren
 
-A first experiment in implementing first-order logic programming in miniKanren, written as an extension of Jason Hemann and Daniel P. Friedman's microKanren.
+A first experiment in doing first-order logic programming in miniKanren, written as an extension of Jason Hemann and Daniel P. Friedman's microKanren.
 
 The basic temporal primitive `later` is implemented using delayed streams (Scheme promises), alongside immature and mature ones.
 
