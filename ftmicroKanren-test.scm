@@ -5,7 +5,7 @@
 (define (assp pred alist)
   (find (lambda (pair) (pred (car pair))) alist))
 
-(include "fmicroKanren.scm")
+(include "ftmicroKanren.scm")
 (include "miniKanren-wrappers.scm")
 (include "microKanren-test-programs.scm")
 

@@ -1,6 +1,8 @@
 ;; Jason Hemann and Dan Friedman
 ;; microKanren, final implementation from paper
-;; extended for promises by Nathaniel Rudavsky-Brody
+
+;; extended for first-order temporal logic using promises
+;; by Nathaniel Rudavsky-Brody
 
 (define (var c) (vector c))
 (define (var? x) (vector? x))

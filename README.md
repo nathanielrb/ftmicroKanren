@@ -1,4 +1,4 @@
-# tmicroKanren
+# ft-microKanren
 
 A first experiment in doing first-order logic programming in miniKanren, written as an extension of Jason Hemann and Daniel P. Friedman's microKanren.
 
