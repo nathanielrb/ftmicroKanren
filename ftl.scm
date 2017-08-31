@@ -60,26 +60,14 @@
 	(conj (fail (g2*))
 	      (next (precedes* g1* g2*)))))
 
-(define (fp $) (force (promised $)))
+
+
+;;; examples 
 
 (define *db* (make-parameter 1))
 
-;;(define (db x) (Zzz (begin (print "checking " x) (== x *db*))))
-;; (define (db x)
-;;   (let ((d (*db*)))
-;;     (lambda (s/c)
-;;       (lambda ()
-;; 	(print "checking " x)
-;; 	((== x d) s/c)))))
-
 (define (db x) (begin (print "checking " x " against " (*db*)) (== x (*db*))))
 
-;; (define (precedes2 g1 g2)
-;;   (forward (conj g1 (maybe (next (eventually g2))))
-;; 	   (conj (fail g2)
-;; 		 (next (precedes g1 g2)))))
-
-(define (fp $) (force (promised $)))
 (define r0 (run* (q) (== q 'success) (until (db 1) (db 3))))
 ;; r0 => #<promise>
 
