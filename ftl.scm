@@ -15,6 +15,19 @@
     (let (($ (pull (g s/c))))
       (if (null? $) (unit s/c) mzero))))
 
+(define (fail g)
+  (lambda (s/c)
+    (let loop (($ (g s/c)))
+      (cond ((null? $) '())
+	    ((procedure? $)
+	     (lambda () (loop ($))))
+	    ;; ((promise? $)
+	    (else
+	     (let ((S/c (car $)))
+	       (if (equal? S/c s/c)
+		   (cons S/c (loop (cdr $)))
+		   (loop (cdr $)))))))))
+
 ;; (define (maybe g)
 ;;   (lambda (s/c)
 ;;     (cons s/c (g s/c))))

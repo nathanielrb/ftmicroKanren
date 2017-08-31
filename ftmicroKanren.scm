@@ -1,11 +1,7 @@
 ;; Jason Hemann and Dan Friedman
 ;; microKanren, final implementation from paper
 
-<<<<<<< HEAD:ftmicroKanren.scm
-;; extended for first-order temporal logic using promises
-=======
 ;; extended for temporal logic using promises
->>>>>>> f72100052eeb2522f2f91e5c797ead70f5720687:ftmicroKanren.scm
 ;; by Nathaniel Rudavsky-Brody
 
 (define (var c) (vector c))
@@ -54,11 +50,7 @@
     ((promise? $1) (mplus $2 $1))
     (else (cons (car $1) (mplus (cdr $1) $2)))))
 
-<<<<<<< HEAD:ftmicroKanren.scm
-(define (advance g)
-=======
 (define (forward g)
->>>>>>> f72100052eeb2522f2f91e5c797ead70f5720687:ftmicroKanren.scm
   (lambda (s/c)
     (let rec (($ (g s/c)))
       (cond ((null? $) '())
@@ -70,18 +62,12 @@
    (cond
      ((null? $) mzero)
      ((procedure? $) (lambda () (bind ($) g)))
-<<<<<<< HEAD:ftmicroKanren.scm
-     ((promise? $) (delay (bind (force $) (advance g))))
-=======
      ((promise? $) (delay (bind (force $) (forward g))))
->>>>>>> f72100052eeb2522f2f91e5c797ead70f5720687:ftmicroKanren.scm
      (else (mplus (g (car $)) (bind (cdr $) g)))))
 
 (define-syntax next
   (syntax-rules ()
     ((_ g) (lambda (s/c) (delay (g s/c)))))) 
-
-<<<<<<< HEAD:ftmicroKanren.scm
 
 =======
 (use srfi-1)
@@ -95,4 +81,3 @@
 (define (advance $)
   (let ((p (promised $)))
     (and p (force p))))
->>>>>>> f72100052eeb2522f2f91e5c797ead70f5720687:ftmicroKanren.scm
