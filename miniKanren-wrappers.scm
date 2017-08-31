@@ -67,12 +67,15 @@
       (cond ((null? $) '())
 	    ((promise? $) $)
 	    (else (cons (car $) (take (- n 1) (cdr $))))))))
+<<<<<<< HEAD
 
 (define (promised $)
   (take-right $ 0))
 
 (define (current $)
   (drop-right $ 0))
+=======
+>>>>>>> f72100052eeb2522f2f91e5c797ead70f5720687
 
 (define (reify-1st s/c)
   (let ((v (walk* (var 0) (car s/c))))

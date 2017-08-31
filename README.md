@@ -1,5 +1,6 @@
 # ft-microKanren
 
+<<<<<<< HEAD
 A first experiment in doing first-order logic programming in miniKanren, written as an extension of Jason Hemann and Daniel P. Friedman's microKanren.
 
 The basic temporal primitive `later` is implemented using delayed streams (Scheme promises), alongside immature and mature ones.
@@ -8,12 +9,64 @@ The basic temporal primitive `later` is implemented using delayed streams (Schem
 
 `next` `always` `eventually` `until` `precedes`
 
+=======
+A first experiment in doing temporal logic programming in miniKanren, written as an extension of Jason Hemann and Daniel P. Friedman's microKanren.
+
+## Overview
+
+A single temporal primitive `next` is implemented using delayed streams (Scheme promises), alongside immature and mature ones. Goals defined with `next` are enclosed in promises, and shunted right and combined during miniKanren's interleaving. This allows goals to refer to external, time-dependent (stateful) resources, with the guaranty that goals at the same "time" increment (i.e., nested levels of `next`) will be created simultaneously.
+
+The accessors `current`, `promised`, and `advance` are defined for working with this extended definition of streams. Here is an example using the miniKanren wrappers, which also have been extended.
+
+```
+(define *db* 1)
+
+(define (db-now-or-latero x)
+  (disj (== x *db*)
+        (next (db-now-or-latero x))))
+
+(define r (run* (q) (db-now-or-latero q)))
+
+r
+;; => '(1 . #<promise>)
+
+(current r)
+;; => '(1)
+
+(promised r)
+;; => #<promise>
+
+(set! *db* 2)
+
+(advance r)
+;; => '(2 . #<promise>)
+```
+
+`next` is indended to be used with domain-specific definitions of failure/constraint to define a more complete temporal logic framework. The file `ftl.scm` uses failure as negation to implement the operators `always`, `eventually`, `until`, and `precedes` from first-order temporal logic. So the above example could be rewritten:
+
+```
+(define (db-now-or-later x)
+  (always (== x *db*)))
+```
+
+and another example (which would of course be more interesting with constraints):
+
+```
+(define *db* 1)
+
+(run* (q)
+  (fresh (a b)
+    (== q 'success)
+    (precedes (== 3 *db*) (== 4 *db*))))
+```
+>>>>>>> f72100052eeb2522f2f91e5c797ead70f5720687
 
 ## Implementation Details
 
 Here is a low-level example showing the interaction between promises, `conj` and `disj`.
 
 ```
+<<<<<<< HEAD
 (define (==next a b)
   (lambda (s/c)
     (delay
@@ -35,6 +88,39 @@ Here is a low-level example showing the interaction between promises, `conj` and
 ```
 
 The macro `next` is defined to facilitate the creation of delayed goals, analogous to `Zzz`, and the utility functions `promised`, `future` and `take-now` help with the dotted-lists created by these promises. The miniKanren wrappers `run`, `run*`, `pull`, `take` and `take-all` are appropriately extended.
+=======
+(define empty-state '(() . 0))
+
+((call/fresh
+  (lambda (q)
+   (disj (== q 4) (next (== q 5)))) )
+ empty-state)
+;; => ((((#(0) . 4)) . 1) . #<promise>)
+
+(force
+ (cdr
+  ((call/fresh
+    (lambda (q)
+     (disj (== q 4) (next (== q 5)))) )
+    empty-state)))
+;; => ((((#(0) . 5)) . 1))      	
+
+((call/fresh
+  (lambda (q)
+   (conj (== q 4) (next (== q 5)))) )
+ empty-state)
+;; => #<promise>
+
+(force
+ ((call/fresh
+   (lambda (q)
+    (conj (== q 4) (next (== q 5)))))
+   empty-state))
+;; => ()
+```
+
+The macro `next` is defined to facilitate the creation of delayed goals, analogous to `Zzz`, and the utility functions `promised`,  `current` and `advance` help with the dotted-lists created by these promises. The miniKanren wrappers `run`, `run*`, `pull`, `take` and `take-all` are appropriately extended.
+>>>>>>> f72100052eeb2522f2f91e5c797ead70f5720687
 
 ```
 (define $0 (run* (q) (disj (== q 4) (next (== q 5)))))
@@ -42,13 +128,21 @@ The macro `next` is defined to facilitate the creation of delayed goals, analogo
 $0
 ;; => (4 . #<promise>)
 
+<<<<<<< HEAD
 (take-now $0)
+=======
+(current $0)
+>>>>>>> f72100052eeb2522f2f91e5c797ead70f5720687
 ;; => (4)
 
 (promised $0)
 ;; => #<promise>
 
+<<<<<<< HEAD
 (take-next $0)
+=======
+(advance $0)
+>>>>>>> f72100052eeb2522f2f91e5c797ead70f5720687
 ;; => (5)
 ```
 
@@ -74,10 +168,17 @@ Conjunction is a little more complicated as soon as we allow for recursive promi
 $1
 ;; => #<promise>
 
+<<<<<<< HEAD
 (take-next $1)
 ;; => (4 . #<promise>)
 
 (take-next (take-next $1))
+=======
+(advance $1)
+;; => (4 . #<promise>)
+
+(advance (advance $1))
+>>>>>>> f72100052eeb2522f2f91e5c797ead70f5720687
 ;; => ()
 
 ;; a bit impure...
@@ -94,6 +195,7 @@ $1
 $2
 ;; => ((0 0) . #<promise>)
 
+<<<<<<< HEAD
 (take-next $2)
 ;; => ((0 1) (1 0) (1 1) . #<promise>)
 
@@ -101,6 +203,15 @@ $2
 ;; => ((1 2) (2 0) (2 1) (2 2) (0 2) . #<promise>)
 
 (take-next (take-next (take-next $2)))
+=======
+(advance $2)
+;; => ((0 1) (1 0) (1 1) . #<promise>)
+
+(advance (advance $2))
+;; => ((1 2) (2 0) (2 1) (2 2) (0 2) . #<promise>)
+
+(advance (advance (advance $2)))
+>>>>>>> f72100052eeb2522f2f91e5c797ead70f5720687
 ;; => ((0 3) (2 3) (3 0) (3 1) (3 2) (3 3) (1 3) . #<promise>)
     
 ```
