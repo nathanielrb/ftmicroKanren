@@ -6,7 +6,7 @@ A first experiment in doing temporal logic programming in miniKanren, written as
 
 A single temporal primitive `next` is implemented using delayed streams (Scheme promises), alongside immature and mature ones. Goals defined with `next` are enclosed in promises, and shunted right and combined during miniKanren's interleaving. This allows goals to refer to external, time-dependent (stateful) resources, with the guaranty that goals at the same "time" increment (i.e., nested levels of `next`) will be created simultaneously.
 
-The accessors `current`, `promised`, and `advance` allow us to work with this extended definition of streams. Here is an example using the miniKanren wrappers, which also have been extended.
+The accessors `current`, `promised`, and `advance` are defined for working with this extended definition of streams. Here is an example using the miniKanren wrappers, which also have been extended.
 
 ```
 (define *db* 1)
@@ -37,6 +37,17 @@ r
 ```
 (define (db-now-or-later x)
   (always (== x *db*)))
+```
+
+and another example (which would of course be more interesting with constraints):
+
+```
+(define *db* 1)
+
+(run* (q)
+  (fresh (a b)
+    (== q 'success)
+    (precedes (== 3 *db*) (== 4 *db*))))
 ```
 
 ## Implementation Details
