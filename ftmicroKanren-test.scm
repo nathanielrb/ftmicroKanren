@@ -108,37 +108,9 @@
 ;; basic temporal tests
 
 (newline)
-<<<<<<< HEAD
 (print "Basic tmicroKanren tests")
 
-(define (==later a b)
-  (lambda (s/c)
-    (delay
-      ((== a b) s/c))))
-=======
-(print "Basic ft-microKanren tests")
->>>>>>> f72100052eeb2522f2f91e5c797ead70f5720687
-
 (define empty-state '(() . 0))
-
-(test-check "disj with one later, current"
-<<<<<<< HEAD
-  (current ((call/fresh (lambda (q) (disj (== q 4) (==later q 5)))) empty-state))
-  '((((#(0) . 4)) . 1)))
-
-(test-check "disj with one later, promised"
-  (force (cdr ((call/fresh (lambda (q) (disj (== q 4) (==later q 5)))) empty-state)))
-  '((((#(0) . 5)) . 1)))
-
-(test-check "conj with one later"
-  (promise? ((call/fresh (lambda (q) (conj (== q 4) (==later q 5)))) empty-state))
-  #t)
-
-(test-check "unsuccessful conj with one later, promised"
-  (force ((call/fresh (lambda (q) (conj (== q 4) (==later q 5)))) empty-state))
-=======
-  (current ((call/fresh (lambda (q) (disj (== q 4) (next (== q 5))))) empty-state))
-  '((((#(0) . 4)) . 1)))
 
 (test-check "disj with one later, promised"
   (force (cdr ((call/fresh (lambda (q) (disj (== q 4) (next (== q 5))))) empty-state)))
@@ -150,7 +122,6 @@
 
 (test-check "unsuccessful conj with one later, promised"
   (force ((call/fresh (lambda (q) (conj (== q 4) (next (== q 5))))) empty-state))
->>>>>>> f72100052eeb2522f2f91e5c797ead70f5720687
   '())
 
 (define $0 (run* (q) (disj (== q 4) (next (== q 5)))))

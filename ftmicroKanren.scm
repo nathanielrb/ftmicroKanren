@@ -69,7 +69,6 @@
   (syntax-rules ()
     ((_ g) (lambda (s/c) (delay (g s/c)))))) 
 
-=======
 (use srfi-1)
 
 (define (promised $)

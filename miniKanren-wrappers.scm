@@ -6,15 +6,25 @@
   (syntax-rules ()
     ((_ g) (lambda (s/c) (lambda () (g s/c))))))
 
+;; (define-syntax conj+
+;;   (syntax-rules ()
+;;     ((_ g) (Zzz g))
+;;     ((_ g0 g ...) (conj (Zzz g0) (conj+ g ...)))))
+
+;; (define-syntax disj+
+;;   (syntax-rules ()
+;;     ((_ g) (Zzz g))
+;;     ((_ g0 g ...) (disj (Zzz g0) (disj+ g ...)))))
+
 (define-syntax conj+
   (syntax-rules ()
-    ((_ g) (Zzz g))
-    ((_ g0 g ...) (conj (Zzz g0) (conj+ g ...)))))
+    ((_ g) g)
+    ((_ g0 g ...) (conj g0 (conj+ g ...)))))
 
 (define-syntax disj+
   (syntax-rules ()
-    ((_ g) (Zzz g))
-    ((_ g0 g ...) (disj (Zzz g0) (disj+ g ...)))))
+    ((_ g) g)
+    ((_ g0 g ...) (disj g0 (disj+ g ...)))))
 
 (define-syntax fresh
   (syntax-rules ()
@@ -67,15 +77,6 @@
       (cond ((null? $) '())
 	    ((promise? $) $)
 	    (else (cons (car $) (take (- n 1) (cdr $))))))))
-<<<<<<< HEAD
-
-(define (promised $)
-  (take-right $ 0))
-
-(define (current $)
-  (drop-right $ 0))
-=======
->>>>>>> f72100052eeb2522f2f91e5c797ead70f5720687
 
 (define (reify-1st s/c)
   (let ((v (walk* (var 0) (car s/c))))
