@@ -49,7 +49,6 @@ and another example (which would of course be more interesting with constraints)
     (== q 'success)
     (precedes (== 3 *db*) (== 4 *db*))))
 ```
->>>>>>> f72100052eeb2522f2f91e5c797ead70f5720687
 
 ## Implementation Details
 
@@ -61,23 +60,6 @@ Here is a low-level example showing the interaction between promises, `conj` and
     (delay
       ((== a b) s/c))))
 
-(define empty-state '(() . 0))
-
-((call/fresh (lambda (q) (disj (== q 4) (==next q 5)))) empty-state)
-;; => ((((#(0) . 4)) . 1) . #<promise>)
-
-(force (cdr ((call/fresh (lambda (q) (disj (== q 4) (==next q 5)))) empty-state)))
-;; => ((((#(0) . 5)) . 1))      	
-
-((call/fresh (lambda (q) (conj (== q 4) (==next q 5)))) empty-state)
-;; => #<promise>
-
-(force ((call/fresh (lambda (q) (conj (== q 4) (==next q 5)))) empty-state))
-;; => ()
-```
-
-The macro `next` is defined to facilitate the creation of delayed goals, analogous to `Zzz`, and the utility functions `promised`, `future` and `take-now` help with the dotted-lists created by these promises. The miniKanren wrappers `run`, `run*`, `pull`, `take` and `take-all` are appropriately extended.
-=======
 (define empty-state '(() . 0))
 
 ((call/fresh
@@ -109,7 +91,6 @@ The macro `next` is defined to facilitate the creation of delayed goals, analogo
 ```
 
 The macro `next` is defined to facilitate the creation of delayed goals, analogous to `Zzz`, and the utility functions `promised`,  `current` and `advance` help with the dotted-lists created by these promises. The miniKanren wrappers `run`, `run*`, `pull`, `take` and `take-all` are appropriately extended.
->>>>>>> f72100052eeb2522f2f91e5c797ead70f5720687
 
 ```
 (define $0 (run* (q) (disj (== q 4) (next (== q 5)))))
