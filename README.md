@@ -1,15 +1,5 @@
 # ft-microKanren
 
-<<<<<<< HEAD
-A first experiment in doing first-order logic programming in miniKanren, written as an extension of Jason Hemann and Daniel P. Friedman's microKanren.
-
-The basic temporal primitive `later` is implemented using delayed streams (Scheme promises), alongside immature and mature ones.
-
-## Primitives
-
-`next` `always` `eventually` `until` `precedes`
-
-=======
 A first experiment in doing temporal logic programming in miniKanren, written as an extension of Jason Hemann and Daniel P. Friedman's microKanren.
 
 ## Overview
@@ -66,7 +56,6 @@ and another example (which would of course be more interesting with constraints)
 Here is a low-level example showing the interaction between promises, `conj` and `disj`.
 
 ```
-<<<<<<< HEAD
 (define (==next a b)
   (lambda (s/c)
     (delay
@@ -128,21 +117,13 @@ The macro `next` is defined to facilitate the creation of delayed goals, analogo
 $0
 ;; => (4 . #<promise>)
 
-<<<<<<< HEAD
-(take-now $0)
-=======
 (current $0)
->>>>>>> f72100052eeb2522f2f91e5c797ead70f5720687
 ;; => (4)
 
 (promised $0)
 ;; => #<promise>
 
-<<<<<<< HEAD
-(take-next $0)
-=======
 (advance $0)
->>>>>>> f72100052eeb2522f2f91e5c797ead70f5720687
 ;; => (5)
 ```
 
@@ -168,17 +149,10 @@ Conjunction is a little more complicated as soon as we allow for recursive promi
 $1
 ;; => #<promise>
 
-<<<<<<< HEAD
-(take-next $1)
-;; => (4 . #<promise>)
-
-(take-next (take-next $1))
-=======
 (advance $1)
 ;; => (4 . #<promise>)
 
 (advance (advance $1))
->>>>>>> f72100052eeb2522f2f91e5c797ead70f5720687
 ;; => ()
 
 ;; a bit impure...
@@ -195,15 +169,6 @@ $1
 $2
 ;; => ((0 0) . #<promise>)
 
-<<<<<<< HEAD
-(take-next $2)
-;; => ((0 1) (1 0) (1 1) . #<promise>)
-
-(take-next (take-next $2))
-;; => ((1 2) (2 0) (2 1) (2 2) (0 2) . #<promise>)
-
-(take-next (take-next (take-next $2)))
-=======
 (advance $2)
 ;; => ((0 1) (1 0) (1 1) . #<promise>)
 
@@ -211,7 +176,6 @@ $2
 ;; => ((1 2) (2 0) (2 1) (2 2) (0 2) . #<promise>)
 
 (advance (advance (advance $2)))
->>>>>>> f72100052eeb2522f2f91e5c797ead70f5720687
 ;; => ((0 3) (2 3) (3 0) (3 1) (3 2) (3 3) (1 3) . #<promise>)
     
 ```
